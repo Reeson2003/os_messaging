@@ -51,12 +51,15 @@ public class Monitor {
                 if (checkQuit()) break;
                 if (senderSignal) {
                     invokeReceiver();
+                    wait();
+                    log(readFromReceiver());
+                    senderSignal = false;
                     TimeUnit.SECONDS.sleep(1);
                 } else {
                     invokeSender();
+                    wait();
                 }
                 log("waiting...");
-                wait();
             } catch (Exception ignored) {
             }
         }
@@ -75,8 +78,6 @@ public class Monitor {
     private void invokeReceiver() throws IOException {
         log("sending signal to receiver");
         Runtime.getRuntime().exec("kill -SIGINT " + receiver.pid());
-        log(readFromReceiver());
-        senderSignal = false;
     }
 
     private boolean checkQuit() throws IOException, InterruptedException {
